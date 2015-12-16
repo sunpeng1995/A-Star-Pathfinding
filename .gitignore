@@ -26,3 +26,9 @@
 *.exe
 *.out
 *.app
+
+/A Star Pathfinding/Debug
+/Debug
+/.vs
+*.opensdf
+*.sdf
