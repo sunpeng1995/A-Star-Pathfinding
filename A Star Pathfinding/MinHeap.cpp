@@ -1,3 +1,6 @@
+#ifndef __MIN_HEAP__
+#define __MIN_HEAP__
+
 #include <vector>
 
 template<class T>
@@ -15,6 +18,8 @@ public:
 	bool isEmpty();
 	void clear();
 	void print();
+	T get(int i);
+
 
 protected:
 	std::vector<T> m_heap;
@@ -45,6 +50,11 @@ int MinHeap<T>::find(T data)
 			return i;
 	}
 	return -1;
+}
+
+template<class T>
+T MinHeap<T>::get(int i) {
+	return m_heap[i];
 }
 
 template<class T>
@@ -109,8 +119,6 @@ void MinHeap<T>::filter_up(int start)
 
 template<class T>
 T MinHeap<T>::top() {
-	if (m_heap.size() == 0)
-		return nullptr;
 	T _top = m_heap[0];
 	remove(_top);
 	return _top;
@@ -133,3 +141,5 @@ template<class T>
 void MinHeap<T>::clear() {
 	m_heap.clear();
 }
+
+#endif
