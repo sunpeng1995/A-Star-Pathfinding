@@ -15,7 +15,8 @@ public:
 		this->y = y;
 	}
 	_pathfind_vec2() {
-
+		x = -1;
+		y = -1;
 	}
 	friend bool operator==(const _pathfind_vec2 v1, _pathfind_vec2 v2) {
 		return (v1.x == v2.x && v1.y == v2.y);
@@ -36,11 +37,11 @@ public:
 	float TotalCost;
 	_pathfind_node* Parent;
 
-	friend bool operator<(const _pathfind_node p1, const _pathfind_node p2) {
+	friend bool operator>(const _pathfind_node p1, const _pathfind_node p2) {
 		return p1.TotalCost > p2.TotalCost;
 	}
 
-	friend bool operator>(const _pathfind_node p1, const _pathfind_node p2) {
+	friend bool operator<(const _pathfind_node p1, const _pathfind_node p2) {
 		return p1.TotalCost < p2.TotalCost;
 	}
 
@@ -53,7 +54,7 @@ public:
 		this->Parent = parent;
 	}
 	_pathfind_node() {
-
+		
 	}
 };
 
@@ -63,6 +64,7 @@ public:
 	std::vector<_pathfind_node> close_list;
 	std::vector<_pathfind_node> 
 		search(_pathfind_vec2 start_position, _pathfind_vec2 goal_position);
+	std::vector<_pathfind_node> search();
 	std::vector<_pathfind_node>
 		back_tracking(_pathfind_node start);
 	bool can_reach(_pathfind_node node);
@@ -70,16 +72,16 @@ public:
 
 	//*need an int type two-demension array,
 	//*the element of array is the cost of that grid.
-	AStarSearch(int **map);
+	AStarSearch(int *map, int width, int height);
 	AStarSearch();
 	~AStarSearch();
 
-	void input_map(int **map, int width, int height);
+	void input_map(int *map, int width, int height);
 	void input_start(int x, int y);
 	void input_goal(int x, int y);
 
 private:
-	int **m_map;
+	int *m_map;
 	int _width, _height;
 	_pathfind_vec2 start_pos;
 	_pathfind_vec2 goal_pos;
@@ -87,6 +89,7 @@ private:
 	int cost_estimate(_pathfind_vec2 s, _pathfind_vec2 g) {
 		return abs(s.x - g.x) + abs(s.y - g.y);
 	}
+	bool is_obstacle(_pathfind_node* node, _pathfind_node* parent);
 	_pathfind_node visit(_pathfind_vec2 node, int direction);
 	float traverse_cost(_pathfind_node node1, _pathfind_node node2);
 	_pathfind_node* find_open_list(_pathfind_node t);

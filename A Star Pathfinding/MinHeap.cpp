@@ -66,8 +66,10 @@ int MinHeap<T>::remove(T data)
 		return index;
 	m_heap[index] = m_heap[m_heap.size() - 1];
 	m_heap.erase(m_heap.end() - 1);
-	filter_down(index, m_heap.size() - 1);
-
+	int heap_size = m_heap.size();
+	if (heap_size > 0) {
+		filter_down(index, m_heap.size() - 1);
+	}
 	return 0;
 }
 

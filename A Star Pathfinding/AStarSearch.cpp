@@ -28,15 +28,18 @@ int main() {
 // 	_vec.erase(std::remove(_vec.begin(), _vec.end(), *p));
 
 	int map[6][10] = { 0 };
-	map[1][4] = 1000;
-	map[1][5] = 1000;
-	map[2][5] = 1000;
-	map[2][5] = 1000;
-	map[3][5] = 1000;
-	map[4][4] = 1000;
-	map[4][5] = 1000;
+	map[1][4] = -1;
+	map[1][5] = -1;
+	map[2][5] = -1;
+	map[2][5] = -1;
+	map[3][5] = -1;
+	map[4][4] = -1;
+	map[4][5] = -1;
 
-	//AStarSearch* astar = AStarSearch(map);
+	AStarSearch* astar = new AStarSearch(&map[0][0], 10, 6);
+	astar->input_start(3, 2);
+	astar->input_goal(1, 8);
+	astar->search();
 
 	system("pause");
 }
@@ -46,14 +49,26 @@ AStarSearch::AStarSearch()
 	
 }
 
-AStarSearch::AStarSearch(int **map) 
+AStarSearch::AStarSearch(int *map, int width, int height) 
 {
 	this->m_map = map;
+	_width = width;
+	_height = height;
 }
 
 AStarSearch::~AStarSearch() 
 {
 
+}
+
+std::vector<_pathfind_node> AStarSearch::search() 
+{
+	_pathfind_vec2 default_vec2;
+	if (goal_pos == default_vec2 || start_pos == default_vec2) {
+		std::vector<_pathfind_node> nil;
+		return nil;
+	}
+	return search(start_pos, goal_pos);
 }
 
 std::vector<_pathfind_node> 
@@ -76,11 +91,14 @@ AStarSearch::search(_pathfind_vec2 start_vec2, _pathfind_vec2 goal_vec2)
 		{
 			for (int i = 0; i < 8; i++) {
 				_pathfind_node near_node = visit(current_node.vec2, i);
+				near_node.Parent = &current_node;
 				if(!can_reach(near_node))
 					continue;
+				float map_cost = 
+					*(m_map + _width*near_node.vec2.y + near_node.vec2.x);
 				float new_cost = current_node.G
 					+ traverse_cost(current_node, near_node)
-					+ m_map[near_node.vec2.y][near_node.vec2.x];
+					+ map_cost;
 
 				//if in close_list or open_list and doesn't have a lower cost,
 				//then skip it
@@ -91,7 +109,6 @@ AStarSearch::search(_pathfind_vec2 start_vec2, _pathfind_vec2 goal_vec2)
 				if(visit_ol != nullptr && visit_ol->G <= new_cost)
 					continue;
 
-				near_node.Parent = &current_node;
 				near_node.G = new_cost;
 				near_node.H = cost_estimate(near_node.vec2, goal_vec2);
 				near_node.TotalCost = near_node.G + near_node.H;
@@ -182,8 +199,27 @@ bool AStarSearch::can_reach(_pathfind_node node)
 {
 	int x = node.vec2.x;
 	int y = node.vec2.y;
-	if (x >= 0 && x < _width && y >= 0 && y < _height)
+	if (x >= 0 && x < _width && y >= 0 && y < _height && !is_obstacle(&node, node.Parent))
 		return true;
+	return false;
+}
+
+bool AStarSearch::is_obstacle(_pathfind_node* node, _pathfind_node* parent) {
+	int _is_obstacle = *(m_map + _width*(node->vec2.y) + node->vec2.x);
+	if (_is_obstacle == -1) {
+		return true;
+	}
+	if (parent == nullptr) {
+		return false;
+	}
+	if (abs(node->vec2.x - parent->vec2.x) == 1 && 
+		abs(node->vec2.y - parent->vec2.y) == 1) {
+		//the neighbor of these two grid
+		if (*(m_map + _width*node->vec2.y + parent->vec2.x) == -1 ||
+			*(m_map + _width*parent->vec2.y + node->vec2.x) == -1) {
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -204,16 +240,16 @@ _pathfind_node* AStarSearch::find_close_list(_pathfind_node t) {
 	return nullptr;
 }
 
-void AStarSearch::input_map(int **map, int width, int height) {
+void AStarSearch::input_map(int *map, int width, int height) {
 	m_map = map;
 	_width = width;
 	_height = height;
 }
 
 void AStarSearch::input_start(int x, int y) {
-	start_pos = _pathfind_vec2(x, y);
+	start_pos = _pathfind_vec2(y, x);
 }
 
 void AStarSearch::input_goal(int x, int y) {
-	goal_pos = _pathfind_vec2(x, y);
+	goal_pos = _pathfind_vec2(y, x);
 }
