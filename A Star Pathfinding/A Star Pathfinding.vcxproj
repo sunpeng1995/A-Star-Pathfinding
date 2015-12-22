@@ -147,6 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AStarSearch.h" />
+    <ClInclude Include="Node.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AStarSearch.cpp" />
